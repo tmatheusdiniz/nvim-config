@@ -41,8 +41,11 @@ vim.api.nvim_set_keymap('n', '<A-l>', ':wincmd h<CR>', { noremap = true, silent 
 -- Save the current file with Ctrl + S (Normal Mode)
 vim.api.nvim_set_keymap('n', '<C-s>', ':w<CR>', { noremap = true, silent = true })
 
+-- Select all text and enter Visual Mode (Ctrl + Alt + A)
+vim.api.nvim_set_keymap('n', '<C-A-a>', 'ggVG', { noremap = true, silent = true })
+
 -- Save the current file with Ctrl + S (Insert Mode)
-vim.api.nvim_set_keymap('i', '<C-s>', '<Esc>:w<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('i', '<C-s>', '<Esc>:w<CR>a', { noremap = true, silent = true })
 
 -- Copy selected text with Ctrl + C (Insert Mode)
 vim.api.nvim_set_keymap('i', '<C-c>', '<Esc>"+y', { noremap = true, silent = true })
