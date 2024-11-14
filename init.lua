@@ -1,6 +1,6 @@
 require('settings')
 
--- Configuração do lazy.nvim
+-- lazy.nvim configuration
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -8,32 +8,30 @@ if not vim.loop.fs_stat(lazypath) then
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- versão estável
+    "--branch=stable",
     lazypath,
   })
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Carregar plugins com lazy.nvim
+-- Load plugins with lazy.nvim
 require("lazy").setup({
   {
     'echasnovski/mini.icons',
-    event = 'VimEnter',  -- ou outro evento apropriado
+    event = 'VimEnter',  -- Load on VimEnter
   },
   require 'plugins.telescope',
-  -- Outros plugins...
+  -- Additional plugins...
   {
-    "hrsh7th/nvim-cmp",  -- Plugin de autocompletar
+    "hrsh7th/nvim-cmp",  -- Autocompletion plugin
     dependencies = {
-      "hrsh7th/cmp-nvim-lsp",  -- Integra o nvim-cmp com LSP (incluindo clangd)
-      "hrsh7th/cmp-buffer",    -- Completamento com base no conteúdo do buffer
-      "hrsh7th/cmp-path",      -- Completamento para caminhos de arquivos
-      "hrsh7th/cmp-cmdline",   -- Completamento de comandos no Neovim
+      "hrsh7th/cmp-nvim-lsp",  -- LSP source for nvim-cmp
+      "hrsh7th/cmp-buffer",    -- Buffer source for nvim-cmp
+      "hrsh7th/cmp-path",      -- Path source for nvim-cmp
+      "hrsh7th/cmp-cmdline",   -- Cmdline source for nvim-cmp
     },
     config = function()
       local cmp = require("cmp")
-
-      -- Configuração do nvim-cmp
       cmp.setup({
         mapping = {
           ["<C-p>"] = cmp.mapping.select_prev_item(),
@@ -42,23 +40,34 @@ require("lazy").setup({
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.abort(),
-          ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Confirmar completamento
+          ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Confirm selection
         },
         sources = {
-          { name = "nvim_lsp" },      -- Autocompletar usando o LSP (como clangd)
-          { name = "buffer" },        -- Autocompletar a partir do conteúdo do buffer
-          { name = "path" },          -- Autocompletar com caminhos de arquivos
-          { name = "cmdline" },       -- Autocompletar comandos no Neovim
+          { name = "nvim_lsp" },
+          { name = "buffer" },
+          { name = "path" },
+          { name = "cmdline" },
         },
         formatting = {
           format = function(entry, vim_item)
-            -- Formatação para exibir os itens de forma mais agradável
             vim_item.kind = string.format("%s", vim_item.kind)
             return vim_item
           end,
         },
       })
     end,
+  },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    run = ":TSUpdate",
+    config = function()
+      require'nvim-treesitter.configs'.setup {
+        ensure_installed = { "c", "java" },  -- Install parsers for C and Java
+        highlight = {
+          enable = true,
+        },
+      }
+    end
   },
   require 'plugins.neo-tree',
   require 'plugins.coc',
@@ -70,22 +79,45 @@ require("lazy").setup({
   require 'plugins.barbar',
   require 'themes.cyberdream',
   -- Theme setup
+  {
+	"williamboman/mason.nvim",
+	config = function()
+	require("mason").setup()
+	end
+  },
 })
 
--- Configuração do LSP para clangd
+-- LSP configuration for clangd
 local lspconfig = require('lspconfig')
 
--- Configuração do clangd para usar com nvim-cmp
+-- clangd setup with nvim-cmp capabilities
 lspconfig.clangd.setup({
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),  -- Integra o LSP com nvim-cmp
+  capabilities = require('cmp_nvim_lsp').default_capabilities(),
   on_attach = function(client, bufnr)
-    -- Mapeamento de teclas para ir para a definição, encontrar referências, etc.
+    -- Key mappings for LSP functions
     vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<Cmd>lua vim.lsp.buf.references()<CR>', { noremap = true, silent = true })
   end,
   flags = {
     debounce_text_changes = 150,
   },
-  -- Outros ajustes conforme necessário
 })
 
+-- LSP configuration for Java with jdtls
+lspconfig.jdtls.setup({
+  cmd = { "jdtls" },
+  root_dir = lspconfig.util.root_pattern('.git', 'mvnw', 'gradlew', 'pom.xml', 'build.gradle'),
+  settings = {
+    java = {
+      home = "/path/to/jdk",  -- Update with JDK path if needed
+    }
+  },
+  capabilities = require('cmp_nvim_lsp').default_capabilities(),
+  on_attach = function(client, bufnr)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<Cmd>lua vim.lsp.buf.references()<CR>', { noremap = true, silent = true })
+  end,
+  flags = {
+    debounce_text_changes = 150,
+  },
+})
