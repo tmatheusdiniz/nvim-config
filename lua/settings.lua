@@ -38,6 +38,19 @@ vim.api.nvim_set_keymap('n', '<A-u>', ':wincmd k<CR>', { noremap = true, silent 
 vim.api.nvim_set_keymap('n', '<A-r>', ':wincmd l<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<A-l>', ':wincmd h<CR>', { noremap = true, silent = true })
 
+local opts = { noremap = true, silent = true }
+-- Key mappings for navigating between terminal splits, in the insert mode (Alt + WASD)
+vim.api.nvim_set_keymap('i', '<A-u>', '<Esc>:wincmd k<CR>i', opts)
+vim.api.nvim_set_keymap('i', '<A-d>', '<Esc>:wincmd j<CR>i', opts)
+vim.api.nvim_set_keymap('i', '<A-l>', '<Esc>:wincmd h<CR>i', opts)
+vim.api.nvim_set_keymap('i', '<A-r>', '<Esc>:wincmd l<CR>i', opts)
+
+-- Key mappings for navigating between terminal splits, in the terminal mode (Alt + WASD)
+vim.api.nvim_set_keymap('t', '<A-u>', '<C-\\><C-n>:wincmd k<CR>', opts)
+vim.api.nvim_set_keymap('t', '<A-d>', '<C-\\><C-n>:wincmd j<CR>', opts)
+vim.api.nvim_set_keymap('t', '<A-l>', '<C-\\><C-n>:wincmd h<CR>', opts)
+vim.api.nvim_set_keymap('t', '<A-r>', '<C-\\><C-n>:wincmd l<CR>', opts)
+
 -- Save the current file with Ctrl + S (Normal Mode)
 vim.api.nvim_set_keymap('n', '<C-s>', ':w<CR>', { noremap = true, silent = true })
 
@@ -45,7 +58,7 @@ vim.api.nvim_set_keymap('n', '<C-s>', ':w<CR>', { noremap = true, silent = true 
 vim.api.nvim_set_keymap('n', '<C-A-a>', 'ggVG', { noremap = true, silent = true })
 
 -- Save the current file with Ctrl + S (Insert Mode)
-vim.api.nvim_set_keymap('i', '<C-s>', '<Esc>:w<CR>a', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('i', '<C-s>', '<Esc>:w<CR>i', { noremap = true, silent = true })
 
 -- Copy selected text with Ctrl + C (Insert Mode)
 vim.api.nvim_set_keymap('i', '<C-c>', '<Esc>"+y', { noremap = true, silent = true })
@@ -80,9 +93,6 @@ vim.api.nvim_set_keymap('i', '<C-S-Right>', '<Esc>v$ia', { noremap = true, silen
 -- Terminal mode mappings
 vim.api.nvim_set_keymap('t', '<C-n>', '<C-\\><C-n>', { noremap = true, silent = true })
 
--- Insert < in Insert Mode (Key for <)
-vim.api.nvim_set_keymap('i', '<', '<><Esc>i', { noremap = true, silent = true })
-
 -- Search for a word in the text (Ctrl + F)
 vim.api.nvim_set_keymap('n', '<C-f>', '/\\C', { noremap = true, silent = false })
 
@@ -97,7 +107,7 @@ vim.api.nvim_set_keymap('n', 'H', '<Cmd>BufferPrevious<CR>', { noremap = true, s
 vim.api.nvim_set_keymap('n', 'L', '<Cmd>BufferNext<CR>', { noremap = true, silent = true })
 
 -- Close the current buffer/tab (Ctrl + Q)
-vim.api.nvim_set_keymap('n', '<C-q>', '<Cmd>BufferClose<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-q>', ':q<CR>', { noremap = true, silent = true })
 
 -- Disable swap files
 vim.opt.swapfile = false  -- Avoid creating swap files
